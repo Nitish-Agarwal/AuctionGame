@@ -137,20 +137,20 @@ def calculate_bid(game_state, wealth, wealth_table, name, auction_items, current
             print(wealth)
             return wealth
         else:
-            maxSeen = maxO
             opponent2 = -1
             for opponent in opponentAndSelfData:
                 if opponent == name:
                     continue
                 else:
-                    if wealth_table[opponent] > maxSeen:
+                    if wealth_table[opponent] > maxO:
                         opponent2 = opponent
-                        maxSeen = wealth_table[opponent]
+                        break
             if opponent2 != -1:
-                time.sleep(min(5.1, remaining_time/3))
+                if remaining_time > 12:
+                    time.sleep(min(15.1, (remaining_time - 10) / 3))
             print("############# 2 #########")
-            print(xo+1)
-            return xo + 1
+            print(maxO + 1)
+            return maxO + 1
 
     moneyToSpend = wealth
     n = required_items
@@ -172,7 +172,8 @@ def calculate_bid(game_state, wealth, wealth_table, name, auction_items, current
         if opponent == name:
             continue
         xo = wealth_table[opponent]
-
+        if xo <= 0:
+            continue
         no = required_count
         current_item = auction_items[current_round]
         lo = opponentAndSelfData[opponent]
@@ -186,6 +187,9 @@ def calculate_bid(game_state, wealth, wealth_table, name, auction_items, current
     if bestOpponent != -1:
         if wealth_table[bestOpponent] > wealth:
             maxOfBestOpponent = int(maxOfBestOpponent * wealth / wealth_table[bestOpponent])
+        elif inner < maxOfBestOpponent:
+            maxOfBestOpponent = int(maxOfBestOpponent + inner * (wealth / wealth_table[bestOpponent] - 1))
+            maxOfBestOpponent = min(maxOfBestOpponent, wealth_table[bestOpponent])
         inner = max(inner, maxOfBestOpponent)
     print("############# 3 #########")
     print(min(wealth, inner))
