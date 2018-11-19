@@ -25,6 +25,7 @@ game_state: 'finished': whether the game has finished
 -------------------------------------------------------------------
 You should return a whole number as the bid per turn.
 '''
+dd = dict()
 ### TODO Put your bidding algorithm here
 def calculate_bid(game_state, wealth, wealth_table):
     '''
@@ -33,6 +34,12 @@ def calculate_bid(game_state, wealth, wealth_table):
     'wealth_table': dictionary of wealth of each player like {'player_name': wealth, ...}
                     *Notice that player_name is a string. Invalid player will have wealth of -1.*
     '''
+    if game_state['bid_winner'] in dd:
+        dd[game_state['bid_winner'] = [game_state['bid_item']]
+    else:
+        dd[game_state['bid_winner'].append(game_state['bid_item'])
+    print("who has what")
+    print(dd)
     print("game state: ######################################")
     print(game_state)
     print("wealth: ############################################")
@@ -63,11 +70,11 @@ if __name__ == '__main__':
     wealth = 100
     while True:
         print("current bid item: #########################")
-        print(auction_items[current_round])
         if current_round == 0:
             bid_amt = calculate_bid(None, wealth, wealth_table)
         else:
             bid_amt = calculate_bid(game_state, wealth, game_state['wealth_table'])
+        print(auction_items[current_round])
         client.make_bid(auction_items[current_round], bid_amt)
 
         # after sending bid, wait for other player
