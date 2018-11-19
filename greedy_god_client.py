@@ -36,9 +36,12 @@ def calculate_bid(game_state, wealth, wealth_table):
     '''
     if game_state:
         if game_state['bid_winner'] not in dd:
-            dd[game_state['bid_winner']] = [game_state['bid_item']]
+            dd[game_state['bid_winner']] = {game_state['bid_item'] : 1}
         else:
-            dd[game_state['bid_winner']].append(game_state['bid_item'])
+            if game_state['bid_item'] in dd[game_state['bid_winner']]:
+                dd[game_state['bid_winner']][game_state['bid_item']] += 1
+            else:
+                dd[game_state['bid_winner']][game_state['bid_item']] = 0
     print("who has what")
     print(dd)
     print("game state: ######################################")
