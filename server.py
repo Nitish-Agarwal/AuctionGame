@@ -13,18 +13,45 @@ def recv_from_client(socket, player, remain_time, valid_player):
     if valid_player == False:
         player_bid['timeout'] = True
         return player_bid
-
-    try:
-        socket.settimeout(remain_time)
-        data = socket.recv(Server.DATA_SIZE).decode('utf-8')
-
-        player_bid['bid'] = json.loads(data)
-        player_bid['received_time'] = datetime.now()
-
-    except sck.timeout:
-        player_bid['timeout'] = True
-
+       
+    elapse = 0
+    start = datetime.now()
+    while elapse < remain_time:
+        try:
+            data = socket.recv(Server.DATA_SIZE).decode('utf-8')       
+            player_bid['received_time'] = datetime.now()
+            player_bid['start_time'] = start
+            player_bid['bid'] = json.loads(data)
+            elapse = (player_bid['received_time'] - start).total_seconds()
+            if elapse < remain_time:
+                return player_bid
+            else:
+                player_bid['bid'] = -1
+                player_bid['timeout'] = True
+                return player_bid
+        except:
+            elapse = (datetime.now() - start).total_seconds()
+    player_bid['bid'] = -1
+    player_bid['timeout'] = True
     return player_bid
+
+
+    socket.settimeout(remain_time)
+    while True:
+        try:
+            socket.setblocking(True)
+            data = socket.recv(Server.DATA_SIZE).decode('utf-8')
+
+            player_bid['bid'] = json.loads(data)
+            player_bid['received_time'] = datetime.now()
+
+        except sck.timeout:
+            socket.spend_time_dict[socket] = -1
+            player_bid['bid'] = -1
+            player_bid['received_time'] = datetime.now()
+            player_bid['timeout'] = True
+
+        return player_bid
 
 def send_update(socket, data):
     socket.setblocking(True)
@@ -48,7 +75,7 @@ class Server():
         self.socket.listen(num_player)
 
         self.num_player = len(self.player_sockets)
-        self.pool = Pool(processes=self.num_player)
+        # self.pool = Pool(processes=self.num_player)
 
     def establish_connection(self):
         """Establishes connection with players"""
@@ -63,7 +90,10 @@ class Server():
         results = []
         for idx in range(len(self.player_sockets)):
             if valid_players[idx] is True:
-                results.append(self.pool.apply_async(send_update, (self.player_sockets[idx], data)))
+                result = send_update(self.player_sockets[idx], data)
+                results.append(result)
+                # results.append(self.pool.apply_async(send_update, (self.player_sockets[idx], data)))
+        return results
         return [r.get() for r in results]
 
     def receive(self, player):
@@ -75,12 +105,18 @@ class Server():
         bids = []
 
         for player in range(self.num_player):
-            r = self.pool.apply_async(recv_from_client, (self.player_sockets[player], player, remain_times[player], valid_players[player]))
+            # print("vefore rec\n")
+            r = recv_from_client(self.player_sockets[player], player, remain_times[player], valid_players[player])
+            # r = self.pool.apply_async(recv_from_client, (self.player_sockets[player], player, remain_times[player], valid_players[player]))
+            # print("after rec\n")
+            # print(r)
             bids.append(r)
-
-        bids = [b.get() for b in bids]
-
+        # print(bids)
         return bids
+        # bids = [b.get() for b in bids]
+        #
+        #
+        # return bids
 
     def close(self):
         """Close server"""
