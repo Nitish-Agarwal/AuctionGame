@@ -34,10 +34,11 @@ def calculate_bid(game_state, wealth, wealth_table):
     'wealth_table': dictionary of wealth of each player like {'player_name': wealth, ...}
                     *Notice that player_name is a string. Invalid player will have wealth of -1.*
     '''
-    if game_state and game_state['bid_winner'] in dd:
-        dd[game_state['bid_winner']] = [game_state['bid_item']]
-    else:
-        dd[game_state['bid_winner']].append(game_state['bid_item'])
+    if game_state:
+        if game_state['bid_winner'] in dd:
+            dd[game_state['bid_winner']] = [game_state['bid_item']]
+        else:
+            dd[game_state['bid_winner']].append(game_state['bid_item'])
     print("who has what")
     print(dd)
     print("game state: ######################################")
