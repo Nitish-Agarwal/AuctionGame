@@ -33,11 +33,11 @@ def calculate_bid(game_state, wealth, wealth_table):
     'wealth_table': dictionary of wealth of each player like {'player_name': wealth, ...}
                     *Notice that player_name is a string. Invalid player will have wealth of -1.*
     '''
-    print("game state")
+    print("game state: ######################################")
     print(game_state)
-    print("wealth")
+    print("wealth: ############################################")
     print(wealth)
-    print("wealth_table")
+    print("wealth_table: ##########################################")
     print(wealth_table)
     #return random.randrange(0, wealth)
     x = input()
@@ -62,6 +62,8 @@ if __name__ == '__main__':
     current_round = 0
     wealth = 100
     while True:
+        print("current bid item: #########################")
+        print(auction_items[current_round])
         if current_round == 0:
             bid_amt = calculate_bid(None, wealth, wealth_table)
         else:
