@@ -71,11 +71,12 @@ if __name__ == '__main__':
     wealth = 100
     while True:
         print("current bid item: #########################")
+        print(auction_items[current_round])
+        print("\n\n")
         if current_round == 0:
             bid_amt = calculate_bid(None, wealth, wealth_table)
         else:
             bid_amt = calculate_bid(game_state, wealth, game_state['wealth_table'])
-        print(auction_items[current_round])
         client.make_bid(auction_items[current_round], bid_amt)
 
         # after sending bid, wait for other player
