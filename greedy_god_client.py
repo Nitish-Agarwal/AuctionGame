@@ -184,6 +184,8 @@ def calculate_bid(game_state, wealth, wealth_table, name, auction_items, current
             maxOfBestOpponent = currentInner
             bestOpponent = opponent
     if bestOpponent != -1:
+        if wealth_table[bestOpponent] > wealth:
+            maxOfBestOpponent = int(maxOfBestOpponent * wealth / wealth_table[bestOpponent])
         inner = max(inner, maxOfBestOpponent)
     print("############# 3 #########")
     print(min(wealth, inner))
